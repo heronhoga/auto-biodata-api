@@ -3,25 +3,30 @@ package services
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"github.com/heronhoga/auto-biodata-api/models"
-
 )
 
 func Predict(w http.ResponseWriter, r *http.Request) {
-	//check if it's application/json
+	//headers check - content type
 	contentType := r.Header.Get("Content-Type")
 	if contentType != "application/json" {
 		http.Error(w, "Content-Type must be application/json", http.StatusBadRequest)
 		return
 	}
 
-	//check app key
-	
+	//headers check - application key
+	appKey := r.Header.Get("App-Key")
+	if appKey != os.Getenv("APPLICATION_KEY") {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	//check request body
 	if r.ContentLength == 0 {
 		http.Error(w, "payload is required", http.StatusBadRequest)
+		return
 	}
 
 	var request models.PredictionRequest
@@ -36,7 +41,7 @@ func Predict(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// service
+	//service
 	prediction := models.PredictionData{
 		Name: "Hoga",
 		Age: 20,
