@@ -16,7 +16,28 @@ func Predict(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	prediction := models.Prediction{
+	//check app key
+	
+
+	//check request body
+	if r.ContentLength == 0 {
+		http.Error(w, "payload is required", http.StatusBadRequest)
+	}
+
+	var request models.PredictionRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	if request.Name == "" {
+		http.Error(w, "Name cannot be empty", http.StatusBadRequest)
+		return
+	}
+	
+	// service
+	prediction := models.PredictionData{
 		Name: "Hoga",
 		Age: 20,
 		Gender: "Male",
