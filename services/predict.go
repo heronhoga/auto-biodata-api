@@ -98,6 +98,12 @@ func Predict(w http.ResponseWriter, r *http.Request) {
 	//end service call
 	response := models.PredictionResponse{
 		Status: 200,
+		Data: models.PredictionData{
+			Name: request.Name,
+			Age: agifyResponse.Age,
+			Gender: genderizeResponse.Gender,
+			Nationality: nationalizeResponse.Country,
+		},
 	}
 
 	w.Header().Set("Content-Type", "application/json")
