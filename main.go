@@ -5,23 +5,35 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/heronhoga/auto-biodata-api/routes"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Error loading env: ", err.Error())
+	// Load env
+	if err := godotenv.Load(); err != nil {
+		log.Println("Error loading env:", err)
 	}
+
+	port := os.Getenv("APPLICATION_PORT")
+	if port == "" {
+		log.Fatal("APPLICATION_PORT is not set")
+	}
+
 	mux := routes.RouteIndex()
 
-	fmt.Println("Server is running on port:", os.Getenv("APPLICATION_PORT"))
+	appPort := fmt.Sprintf(":%s", port)
+	fmt.Println("Server is running on port:", port)
 
-	appPort := fmt.Sprintf(":%s", os.Getenv("APPLICATION_PORT"))
-	err = http.ListenAndServe(appPort, mux)
-	if err != nil {
-		log.Println("Error running server: ", err.Error())
+	server := &http.Server{
+		Addr:         appPort,
+		Handler:      mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
+
+	log.Fatal(server.ListenAndServe())
 }

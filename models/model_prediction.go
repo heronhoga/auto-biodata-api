@@ -5,7 +5,7 @@ type PredictionData struct {
 	Name string `json:"name"`
 	Age int `json:"age"`
 	Gender string `json:"gender"`
-	Nationality string `json:"nationality"`
+	Nationality NationalizeResponse `json:"nationality"`
 }
 
 type PredictionRequest struct {
