@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -27,15 +28,13 @@ func Predict(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//check request body
-	if r.ContentLength == 0 {
-		http.Error(w, "payload is required", http.StatusBadRequest)
-		return
-	}
-
 	var request models.PredictionRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		if err == io.EOF {
+			http.Error(w, "payload cannot be empty", http.StatusBadRequest)
+			return
+		}
 		http.Error(w, "invalid JSON", http.StatusBadRequest)
 		return
 	}
